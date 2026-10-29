@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Employe;
+import tn.esprit.autoloc.dto.EmployeDTO;
 import tn.esprit.autoloc.service.IEmployeService;
+
 import java.util.List;
 
 @RestController
@@ -21,27 +23,27 @@ public class EmployeController {
     @GetMapping
     @Operation(summary = "Lister les employés")
     @ApiResponse(responseCode = "200", description = "Employés trouvés")
-    public List<Employe> findAll() { return employeService.findAll(); }
+    public List<EmployeDTO> findAll() { return employeService.findAll(); }
 
     @GetMapping("/{id}")
     @Operation(summary = "Consulter un employé")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Employé trouvé"),
             @ApiResponse(responseCode = "404", description = "Employé introuvable")})
-    public Employe findById(@PathVariable Long id) { return employeService.findById(id); }
+    public EmployeDTO findById(@PathVariable Long id) { return employeService.findById(id); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer un employé")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "Employé créé"),
             @ApiResponse(responseCode = "400", description = "Données invalides")})
-    public Employe create(@RequestBody Employe employe) { return employeService.create(employe); }
+    public EmployeDTO create(@Valid @RequestBody EmployeDTO employe) { return employeService.create(employe); }
 
     @PutMapping("/{id}")
     @Operation(summary = "Modifier un employé")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Employé modifié"),
             @ApiResponse(responseCode = "400", description = "Données invalides"),
             @ApiResponse(responseCode = "404", description = "Employé introuvable")})
-    public Employe update(@PathVariable Long id, @RequestBody Employe employe) {
+    public EmployeDTO update(@PathVariable Long id, @Valid @RequestBody EmployeDTO employe) {
         return employeService.update(id, employe);
     }
 

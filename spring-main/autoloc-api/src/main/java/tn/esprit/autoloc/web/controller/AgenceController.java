@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.autoloc.domain.Agence;
+import tn.esprit.autoloc.dto.AgenceDTO;
 import tn.esprit.autoloc.service.IAgenceService;
+
 import java.util.List;
 
 @RestController
@@ -21,27 +23,27 @@ public class AgenceController {
     @GetMapping
     @Operation(summary = "Lister les agences")
     @ApiResponse(responseCode = "200", description = "Agences trouvées")
-    public List<Agence> findAll() { return agenceService.findAll(); }
+    public List<AgenceDTO> findAll() { return agenceService.findAll(); }
 
     @GetMapping("/{id}")
     @Operation(summary = "Consulter une agence")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Agence trouvée"),
             @ApiResponse(responseCode = "404", description = "Agence introuvable")})
-    public Agence findById(@PathVariable Long id) { return agenceService.findById(id); }
+    public AgenceDTO findById(@PathVariable Long id) { return agenceService.findById(id); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Créer une agence")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "Agence créée"),
             @ApiResponse(responseCode = "400", description = "Données invalides")})
-    public Agence create(@RequestBody Agence agence) { return agenceService.create(agence); }
+    public AgenceDTO create(@Valid @RequestBody AgenceDTO agence) { return agenceService.create(agence); }
 
     @PutMapping("/{id}")
     @Operation(summary = "Modifier une agence")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Agence modifiée"),
             @ApiResponse(responseCode = "400", description = "Données invalides"),
             @ApiResponse(responseCode = "404", description = "Agence introuvable")})
-    public Agence update(@PathVariable Long id, @RequestBody Agence agence) {
+    public AgenceDTO update(@PathVariable Long id, @Valid @RequestBody AgenceDTO agence) {
         return agenceService.update(id, agence);
     }
 

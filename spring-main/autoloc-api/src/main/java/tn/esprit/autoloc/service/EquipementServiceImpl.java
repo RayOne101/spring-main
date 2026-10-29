@@ -3,39 +3,43 @@ package tn.esprit.autoloc.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.autoloc.domain.Equipement;
+import tn.esprit.autoloc.dto.EquipementDTO;
 import tn.esprit.autoloc.exception.ResourceNotFoundException;
+import tn.esprit.autoloc.mapper.EquipementMapper;
 import tn.esprit.autoloc.repository.IEquipementRepository;
+
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class EquipementServiceImpl implements IEquipementService {
+
     private final IEquipementRepository equipementRepository;
+    private final EquipementMapper equipementMapper;
 
     @Override
-    public Equipement create(Equipement equipement) {
+    public EquipementDTO create(EquipementDTO equipement) {
         requireNew(equipement.getIdEquipement());
-        validate(equipement);
-        return equipementRepository.save(equipement);
+        return equipementMapper.toDto(equipementRepository.save(equipementMapper.toEntity(equipement)));
     }
 
     @Override
-    public Equipement findById(Long id) {
-        return equipementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Equipement", id));
+    public EquipementDTO findById(Long id) {
+        return equipementMapper.toDto(getEntity(id));
     }
 
     @Override
-    public List<Equipement> findAll() {
-        return equipementRepository.findAll();
+    public List<EquipementDTO> findAll() {
+        return equipementRepository.findAll().stream()
+                .map(equipementMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Equipement update(Long id, Equipement equipement) {
-        Equipement existing = findById(id);
-        validate(equipement);
+    public EquipementDTO update(Long id, EquipementDTO equipement) {
+        Equipement existing = getEntity(id);
         existing.setLibelle(equipement.getLibelle());
-        return equipementRepository.save(existing);
+        return equipementMapper.toDto(equipementRepository.save(existing));
     }
 
     @Override
@@ -44,10 +48,9 @@ public class EquipementServiceImpl implements IEquipementService {
         equipementRepository.deleteById(id);
     }
 
-    private void validate(Equipement equipement) {
-        if (equipement.getLibelle() == null || equipement.getLibelle().isBlank()) {
-            throw new IllegalArgumentException("Le libelle de l'equipement est obligatoire");
-        }
+    private Equipement getEntity(Long id) {
+        return equipementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Equipement", id));
     }
 
     private void requireNew(Long id) {
